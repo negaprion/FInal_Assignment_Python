@@ -40,18 +40,21 @@ most_popular_per_zip = most_popular_per_zip.groupby('zip_code').first().reset_in
 # Print result (1)
 print(most_popular_per_zip)
 
-# Find sales by store and sales by store percentage
-sales_by_store = data.groupby(['store_number'])['sale_dollars'].sum().reset_index()
-total_sales = sales_by_store['sale_dollars'].sum()
-sales_by_store['percent_sales'] = sales_by_store['sale_dollars'] / total_sales * 100
+
+# Find sales per store and sales per store percentage
+sales_per_store = data.groupby(['store_number'])['sale_dollars'].sum().reset_index()
+total_sales = sales_per_store['sale_dollars'].sum()
+sales_per_store['sale_dollars_percentage'] = sales_per_store['sale_dollars'] / total_sales * 100
+sales_per_store = sales_per_store.sort_values('sale_dollars_percentage', ascending=False)
+
 
 # Print result (2)
-print(sales_by_store)
+print(sales_per_store)
 
 
 
-# VISUALISATIONS
-# Define the colormap to use
+# Visualisation 1 - Scatter - Most popular item per zip code
+# Define the colormap
 cmap = plt.cm.get_cmap('jet')
 
 # Create the figure object
@@ -89,73 +92,27 @@ for idx in top10:
 plt.show()
 
 
-# Create the horizontal bar plot of sales by store percentage, sorted in descending order
-plt.barh(sales_by_store['store_number'], sales_by_store['percent_sales'], color='red')
-plt.gca().invert_yaxis()
+# Visualisation 2 - Horizontal Bar - Percent of sales
+# Define the colormap
+cmap = plt.cm.get_cmap('plasma')
+
+# Create the figure object
+fig = plt.figure(figsize=(16, 10), facecolor='black')
+
+# Create the horizontal bar plot of sales per store percentage
+plt.barh(range(len(sales_per_store)), sales_per_store['sale_dollars_percentage'],
+         color=cmap(sales_per_store['sale_dollars_percentage']/100))
 
 # Set axis labels, title, ticks, and colors to match black background
-plt.xlabel('Percentage of Sales', fontsize=20, color='white')
-plt.ylabel('Store Number', fontsize=20, color='white')
-plt.title('SALES BY STORE', fontdict={'fontsize': 35, 'color': 'white'}, loc='center', pad=None)
+plt.xlabel('Percentage of Total Sales', fontsize=16, color='white')
+plt.ylabel('Store Number', fontsize=16, color='white')
+plt.title('SALES % PER STORE', fontdict={'fontsize': 35, 'color': 'white'}, loc='center', pad=None)
 plt.xticks(color='gray')
-plt.yticks(color='gray')
+plt.yticks(range(len(sales_per_store)), sales_per_store['store_number'], color='gray', ha='center', va='center')
 
 # Set the colour of the axes to black
 plt.gca().set_facecolor('black')
 
-# Display the plot
-plt.show()
-
-
-
-
-"""
-
-
-# Visualize percentage of sales by store
-
-plt.figure(figsize=(16, 9), facecolor='black')
-plt.pie(sales_by_store['percent_sales'], labels=sales_by_store['store_number'], autopct='%1.1f%%')
-plt.axis('equal')
-plt.title('Sales by Store Percentage', fontdict=({'fontsize':35, 'color':'white'}), loc='center', pad=None)
-plt.pie(sales_by_store['percent_sales'], labels=sales_by_store['store_number'], autopct='%1.1f%%', textprops={'color':'white'})
-
-# Sort the data by percent_sales in descending order
-sales_by_store.sort_values(by='percent_sales', ascending=False, inplace=True)
-
-# Create a horizontal bar chart
-plt.figure(figsize=(16,9), facecolor='white')
-plt.barh(sales_by_store['store_number'], sales_by_store['percent_sales'], color='blue')
-
-# Set the labels, title and axis limits
-plt.xlabel('Percentage of Sales', fontsize=24, color='white')
-plt.ylabel('Store Number', fontsize=24, color='white')
-plt.title('Sales by Store Percentage', fontdict=({'fontsize': 35, 'color':'white'}), loc ='center', pad=None)
-plt.xlim(0, 25)
-
-# Show the plot
-plt.show()
-
-
-# Define the figure size and facecolor
-plt.figure(figsize=(16,9), facecolor='black')
-
-# Sort the sales by store in descending order based on percent_sales
-sales_by_store = sales_by_store.sort_values('percent_sales', ascending=False)
-
-# Create the horizontal bar chart with store number on y-axis and percentage of sales on x-axis
-plt.barh(sales_by_store['store_number'], sales_by_store['percent_sales'], color='blue')
-
-# Set the x-axis label and color
-plt.xlabel('Percentage of Sales', fontsize=24, color='white')
-
-# Set the y-axis label and color
-plt.ylabel('Store Number', fontsize=24, color='white')
-
-# Set the chart title and font size and color
-plt.title('Percentage of Sales by Store', fontdict={'fontsize':35, 'color':'white'}, loc='center', pad=None)
-
-# Show the plot
 plt.show()
 
 
@@ -163,31 +120,9 @@ plt.show()
 
 
 
-plt.show()
 
 
 
 
 
-# Create the figure object
-fig = plt.figure(figsize=(10, 10), facecolor='black')
 
-# Create the scatter plot of most popular item per zip code, with colors based on bottles_sold
-plt.scatter(most_popular_per_zip['zip_code'], most_popular_per_zip['bottles_sold'], c=most_popular_per_zip['bottles_sold'], cmap=cmap)
-
-# Set the x and y axis labels and title
-plt.xlabel('Zip Code', fontsize=24, color='white')
-plt.ylabel('Bottles Sold', fontsize=24, color='white')
-plt.title('Most Popular Items Per Zip Code', fontdict={'fontsize': 35, 'color': 'white'}, loc='center', pad=None)
-
-# Set the facecolor of the axes to black
-# plt.gca().set_facecolor('black')
-
-# Show the colorbar
-plt.colorbar()
-
-# Display the plot
-plt.show()
-
-
-"""
